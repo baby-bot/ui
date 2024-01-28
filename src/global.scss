@@ -24,3 +24,11 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+.vertical-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Aligns vertically center */
+    justify-content: center; /* Aligns horizontally center, if needed */
+    height: 100%; /* Set the height to the full container's height */
+}
