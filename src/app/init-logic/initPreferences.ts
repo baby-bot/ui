@@ -1,5 +1,5 @@
-import { Preferences } from '@capacitor/preferences';
 import { Device } from '@capacitor/device';
+import { Preferences } from '@capacitor/preferences';
 
 /**
  * Check if user localeId is set.
@@ -8,7 +8,7 @@ import { Device } from '@capacitor/device';
  * If successful, save language code in preferences(don't wait for this result) and return code.
  * Otherwise return default value of en-US.
  */
-export const getLocaleId = async () => {
+export const initPreferences = async () => {
   try {
     const localeIdRecord = await Preferences.get({ key: 'LOCALE_ID' });
     if (localeIdRecord.value) {
@@ -26,11 +26,4 @@ export const getLocaleId = async () => {
     console.error(err);
     return 'en-US5';
   }
-};
-
-/**
- * This function can potentially throw.
- */
-export const clearUserPreferences = async () => {
-  await Preferences.clear();
 };

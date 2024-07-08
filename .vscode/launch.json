@@ -5,15 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "chrome",
+      "type": "node",
       "request": "attach",
-      "name": "Karma Chrome Debug",
-      "address": "localhost",
-      "port": 9333,
-      "pathMapping": {
-        "/": "${workspaceRoot}/",
-        "/base/": "${workspaceRoot}/"
-    }
+      "name": "Debug",
+      "port": 9229
     }
   ]
 }

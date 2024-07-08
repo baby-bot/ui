@@ -1,20 +1,20 @@
 import { Routes } from '@angular/router';
-import { authGuard, notAuthGuard } from './guards';
+import { authGuard, nonAuthGuard } from './guards';
 
 export const routes: Routes = [
   {
     path: '',
-    canActivate: [authGuard], 
+    canActivate: [authGuard],
     children: [
       {
         path: '',
-        loadChildren: () => import('./tabs/tabs.routes').then(m => m.routes)
-      }
-    ]
+        loadChildren: () => import('./tabs/tabs.routes').then((m) => m.routes),
+      },
+    ],
   },
   {
     path: 'landing',
-    canActivate: [notAuthGuard],
-    loadComponent: () => import('./pages').then( m => m.LandingPage)
+    canActivate: [nonAuthGuard],
+    loadComponent: () => import('./pages').then((m) => m.LandingPage),
   },
 ];

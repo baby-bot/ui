@@ -9,14 +9,26 @@
       <ion-col size="12" size-md="8" size-lg="6">
         <div class="vertical-center">
           <h1>Baby Bot</h1>
-          <p i18n>Better Communicate</p>
+          <p i18n>Better Communication</p>
           <br />
           <br />
           <br />
           <br />
-          <ion-button expand="block" color="secondary" disabled="true" i18n
-            >Coming Soon</ion-button
+          <div
+            *ngIf="(authenticationInProgress$ | async) === false; else authInProgress"
           >
+            <ion-button
+              expand="block"
+              color="secondary"
+              disabled="false"
+              (click)="loginWithGoogle()"
+              i18n
+              >Continue with Google</ion-button
+            >
+          </div>
+          <ng-template #authInProgress>
+            <ion-spinner name="circular"></ion-spinner>
+          </ng-template>
         </div>
       </ion-col>
     </ion-row>

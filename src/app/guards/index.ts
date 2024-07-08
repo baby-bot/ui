@@ -1,3 +1,2 @@
-export { authGuard } from "./auth.guard";
-export { notAuthGuard } from "./notAuth.guard";
-
+export { authGuard } from './auth.guard';
+export { nonAuthGuard } from './notAuth.guard';

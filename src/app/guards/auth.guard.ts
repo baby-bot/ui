@@ -1,4 +1,5 @@
 import { inject } from '@angular/core';
+import { Auth } from '@angular/fire/auth';
 import {
   ActivatedRouteSnapshot,
   CanActivateFn,
@@ -6,26 +7,13 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 
-import { AuthService } from '../services';
-
-/**
- *
- * @param next
- * @param state
- * @returns true | urlTree
- *
- * Redirects a non logged in user to the landing page, othwise continues navigation.
- */
 export const authGuard: CanActivateFn = (
   next: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
-) => {
-  // your  logic goes here
-  var loggedIn: boolean = inject(AuthService).isUserLoggedIn(); // TODO: get this information from the authentication service.
-
-  if (loggedIn) {
-    return true;
+): boolean => {
+  const auth = inject(Auth);
+  if (auth.currentUser === null) {
+    inject(Router).navigate(['/landing']);
   }
-
-  return inject(Router).parseUrl('/landing');
+  return true;
 };

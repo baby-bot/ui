@@ -1,0 +1,1 @@
+GET http://127.0.0.1:5001/baby-bot-d8ef9/us-central1/listNumbers HTTP/1.1
