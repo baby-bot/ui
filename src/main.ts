@@ -25,7 +25,10 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
-import { connectAuthEmulatorInDevMode } from './app/emulators';
+import {
+  connectAuthEmulatorInDevMode,
+  connectFirestoreEmulatorInDevMode,
+} from './app/emulators';
 import { provideServiceWorker } from '@angular/service-worker';
 
 bootstrapApplication(AppComponent, {
@@ -48,6 +51,11 @@ bootstrapApplication(AppComponent, {
       const auth = getAuth();
       connectAuthEmulatorInDevMode(auth);
       return auth;
+    }),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      connectFirestoreEmulatorInDevMode(firestore);
+      return firestore;
     }),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
