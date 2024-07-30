@@ -27,7 +27,7 @@ jobs:
       - name: Authenticate with Firebase
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BABY_BOT_D8EF9 }}
-        run: firebase use --add
+        run: firebase use baby-bot-d8ef9
         # run: firebase functions:config:set stripe.secret="your-stripe-secret-key" twilio.account_sid="your-twilio-account-sid" twilio.auth_token="your-twilio-auth-token"
 
       - name: Deploy to Firebase
