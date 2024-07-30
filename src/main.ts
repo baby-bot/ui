@@ -28,6 +28,7 @@ import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import {
   connectAuthEmulatorInDevMode,
   connectFirestoreEmulatorInDevMode,
+  connectFunctionsEmulatorInDevMode,
 } from './app/emulators';
 import { provideServiceWorker } from '@angular/service-worker';
 
@@ -57,9 +58,14 @@ bootstrapApplication(AppComponent, {
       connectFirestoreEmulatorInDevMode(firestore);
       return firestore;
     }),
-    provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000',
+    provideFunctions(() => {
+      const functions = getFunctions();
+      connectFunctionsEmulatorInDevMode(functions);
+      return functions;
     }),
+    // provideServiceWorker('ngsw-worker.js', {
+    //   enabled: !isDevMode(),
+    //   registrationStrategy: 'registerWhenStable:30000',
+    // }),
   ],
 });

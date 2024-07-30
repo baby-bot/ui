@@ -1,0 +1,21 @@
+<ion-list>
+  @for (activity of numberPurchaseStore.queryResult(); track activity.number) {
+  <ion-item value="activity.id">{{ activity.number }}</ion-item>
+  }
+</ion-list>
+
+<div [formGroup]="formGroup">
+  <ion-select label="Country" fromControlName="countryCode">
+    <ion-select-option value="US">US (+1)</ion-select-option>
+  </ion-select>
+  <!-- <ion-input label="Country Code" formControlName="countryCode"></ion-input> -->
+  <ion-input label="Area Code" formControlName="areaCode"></ion-input>
+  <ion-radio-group formControlName="numberType">
+    <ion-radio value="local">Local</ion-radio><br />
+    <ion-radio value="mobile">Mobile</ion-radio><br />
+    <ion-radio value="tollfree">Toll-Free</ion-radio><br />
+  </ion-radio-group>
+  @if (formGroup.touched) {
+  <ion-button (click)="reset()">Reset Form</ion-button>
+  }
+</div>

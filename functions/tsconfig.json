@@ -7,7 +7,10 @@
     "sourceMap": true,
     "strict": false,
     "target": "es2017",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@baby-bot/types": ["../lib/types/index.ts"]
+    }
   },
   "compileOnSave": true,
   "include": [

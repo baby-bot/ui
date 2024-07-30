@@ -1,0 +1,11 @@
+<ion-list>
+  <ion-item>
+    <ion-select aria-label="activity" placeholder="Select activity">
+      @for (activity of activitiesStore.activities(); track activity.id) {
+      <ion-select-option value="activity.id">{{
+        activity.name
+      }}</ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+</ion-list>

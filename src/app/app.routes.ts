@@ -5,8 +5,7 @@ export const routes: Routes = [
   {
     path: '',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./activities/activities.page').then((m) => m.ActivitiesPage),
+    loadChildren: () => import('./tabs/tabs.routes').then((m) => m.routes),
   },
   {
     path: 'activity/:id',
@@ -21,7 +20,8 @@ export const routes: Routes = [
   {
     path: 'landing',
     canActivate: [nonAuthGuard],
-    loadComponent: () => import('./pages').then((m) => m.LandingPage),
+    loadComponent: () =>
+      import('./landing/landing.page').then((m) => m.LandingPage),
   },
   {
     path: 'settings',

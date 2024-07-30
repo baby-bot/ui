@@ -1,95 +1,112 @@
-import { onRequest } from 'firebase-functions/v2/https';
+import { onCall } from 'firebase-functions/v2/https';
 // import * as logger from 'firebase-functions/logger';
 import { twilioClient as client } from './twilio-config';
+import {
+  PhoneNumberType,
+  PurchaseNumberQueryFilters,
+  PurchaseNumberQueryResult,
+} from '@baby-bot/types';
+import { log } from 'firebase-functions/logger';
 
-export const listNumbers = onRequest(async (req, res): Promise<any> => {
-  const { countryCode, numberType, areaCode } = req.query;
+interface ProviderNumber {
+  phoneNumber: string;
+}
+function mapTwilioToBabyBotNumber<T extends ProviderNumber>(
+  providerNumbers: T[],
+  type: PhoneNumberType
+): PurchaseNumberQueryResult[] {
+  return providerNumbers.map((x) => ({
+    number: x.phoneNumber,
+    type,
+  }));
+}
 
-  if (!countryCode || !numberType) {
-    return res
-      .status(400)
-      .send('countryCode and numberType are required query parameters');
-  }
-
-  // Verify countryCode is a valid 2-letter country code
-  if (!/^[A-Z]{2}$/.test(countryCode.toString().toUpperCase())) {
-    return res
-      .status(400)
-      .send('Invalid countryCode. It should be a 2-letter country code.');
-  }
-  const validCountryCodes = ['US', 'CA'];
-  if (!validCountryCodes.includes(countryCode.toString().toUpperCase())) {
-    return res.status(400).send(`Unsupported countryCode.`);
-  }
-
-  // Verify numberType is one of the valid values
-  const validNumberTypes = ['local', 'tollfree', 'mobile'];
-  if (!validNumberTypes.includes(numberType.toString())) {
-    return res
-      .status(400)
-      .send(
-        'Invalid numberType. It should be one of local, tollfree, or mobile.'
-      );
-  }
-
-  if (areaCode) {
-    // Check if the country code is US or CA if an area code is provided
-    if (
-      countryCode.toString().toUpperCase() !== 'US' &&
-      countryCode.toString().toUpperCase() !== 'CA'
-    ) {
-      return res
-        .status(400)
-        .send('areaCode can only be provided if the countryCode is US or CA.');
+export const listNumbers = onCall<PurchaseNumberQueryFilters>(
+  { cors: true },
+  async (context): Promise<PurchaseNumberQueryResult[] | { error: string }> => {
+    const { countryCode, numberType, areaCode } = context.data;
+    log(context.data);
+    if (!countryCode || !numberType) {
+      return {
+        error: 'countryCode and numberType are required query parameters',
+      };
     }
 
-    // Check if the area code is a valid 3-digit number
-    if (!/^\d{3}$/.test(areaCode.toString())) {
-      return res
-        .status(400)
-        .send('Invalid areaCode. It should be a 3-digit number.');
-    }
-  }
+    // const validCountryCodes = ['US', 'CA'];
+    // if (!validCountryCodes.includes(countryCode.toString().toUpperCase())) {
+    //   return { error: `Unsupported countryCode.` };
+    // }
 
-  try {
-    const searchParams: { areaCode: undefined | number; pageSize: number } = {
-      areaCode: undefined,
-      pageSize: 10,
-    };
+    // Verify numberType is one of the valid values
+    const validNumberTypes = ['local', 'tollfree', 'mobile'];
+    if (!validNumberTypes.includes(numberType.toString())) {
+      return {
+        error:
+          'Invalid numberType. It should be one of local, tollfree, or mobile.',
+      };
+    }
 
     if (areaCode) {
-      searchParams.areaCode = Number(areaCode);
+      // Check if the country code is US or CA if an area code is provided
+      // if (
+      //   countryCode.toString().toUpperCase() !== 'US' &&
+      //   countryCode.toString().toUpperCase() !== 'CA'
+      // ) {
+      //   return {
+      //     error:
+      //       'areaCode can only be provided if the countryCode is US or CA.',
+      //   };
+      // }
+
+      // Check if the area code is a valid 3-digit number
+      if (!/^\d{3}$/.test(areaCode.toString())) {
+        return { error: 'Invalid areaCode. It should be a 3-digit number.' };
+      }
     }
 
-    var phoneNumbers;
-    switch (numberType) {
-      case 'local': {
-        phoneNumbers = await client
-          .availablePhoneNumbers(countryCode.toString().toUpperCase())
-          .local.list(searchParams);
-        break;
-      }
-      case 'tollfree': {
-        phoneNumbers = await client
-          .availablePhoneNumbers(countryCode.toString().toUpperCase())
-          .tollFree.list(searchParams);
-        break;
-      }
-      case 'mobile': {
-        phoneNumbers = await client
-          .availablePhoneNumbers(countryCode.toString().toUpperCase())
-          .mobile.list(searchParams);
-        break;
+    try {
+      const searchParams: { areaCode: undefined | number; pageSize: number } = {
+        areaCode: undefined,
+        pageSize: 10,
+      };
+
+      if (areaCode) {
+        searchParams.areaCode = Number(areaCode);
       }
 
-      default:
-        break;
+      var queryResult: PurchaseNumberQueryResult[];
+      switch (numberType) {
+        case 'local': {
+          const localNumbers = await client
+            .availablePhoneNumbers(countryCode.toString().toUpperCase())
+            .local.list(searchParams);
+          queryResult = mapTwilioToBabyBotNumber(localNumbers, 'local');
+          break;
+        }
+        case 'tollfree': {
+          const tollFreeNumbers = await client
+            .availablePhoneNumbers(countryCode.toString().toUpperCase())
+            .tollFree.list(searchParams);
+          queryResult = mapTwilioToBabyBotNumber(tollFreeNumbers, 'tollfree');
+          break;
+        }
+        case 'mobile': {
+          const mobileNumbers = await client
+            .availablePhoneNumbers(countryCode.toString().toUpperCase())
+            .mobile.list(searchParams);
+          queryResult = mapTwilioToBabyBotNumber(mobileNumbers, 'mobile');
+          break;
+        }
+
+        default:
+          break;
+      }
+
+      // const phoneNumbers = availableNumbers.map((number) => number.phoneNumber);
+      return queryResult;
+    } catch (error) {
+      console.error('Error fetching available phone numbers:', error);
+      return { error: 'Internal Server Error' + error };
     }
-
-    // const phoneNumbers = availableNumbers.map((number) => number.phoneNumber);
-    res.status(200).json({ phoneNumbers });
-  } catch (error) {
-    console.error('Error fetching available phone numbers:', error);
-    res.status(500).send('Internal Server Error');
   }
-});
+);

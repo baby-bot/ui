@@ -1,5 +1,6 @@
 import * as auth from 'firebase-functions/v1/auth';
-const admin = require('firebase-admin');
+import { FieldValue } from 'firebase-admin/firestore';
+import * as admin from 'firebase-admin';
 import { stripe } from './stripe-config';
 
 export const createStripeCustomer = auth.user().onCreate(async (user) => {
@@ -14,7 +15,7 @@ export const createStripeCustomer = auth.user().onCreate(async (user) => {
     await admin.firestore().collection('stripeCustomers').doc(user.uid).set({
       customerId: customer.id,
       email: user.email,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
 
     console.log(`Created Stripe customer for user ${user.uid}`);

@@ -1,9 +1,20 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Baby Bot</ion-title>
+    <ion-list>
+      <ion-item>
+        <ion-select aria-label="activity" placeholder="Select activity">
+          @for (activity of activitiesStore.activities(); track activity.id) {
+          <ion-select-option value="activity.id"
+            >{{activity.name}}</ion-select-option
+          >
+          }
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <!-- <ion-title>Baby Bot</ion-title>
     <ion-buttons slot="end" (click)="navigateToSettings()">
       <ion-button>Settings</ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -15,14 +26,14 @@
   </ion-header>
 
   <ion-button id="open-modal" expand="full">New Activity</ion-button>
-  <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
+  <ion-modal trigger="open-modal">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
             <ion-button (click)="cancel()">Cancel</ion-button>
           </ion-buttons>
-          <ion-title>Welcome</ion-title>
+          <ion-title>Create a new activity</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
           </ion-buttons>
@@ -35,7 +46,7 @@
             labelPlacement="stacked"
             type="text"
             placeholder="Tau Wedding!!"
-            [(ngModel)]="name"
+            [formControl]="activityName"
           ></ion-input>
         </ion-item>
       </ion-content>
@@ -43,20 +54,17 @@
   </ion-modal>
 
   <ion-list>
+    @for (activity of activitiesStore.activities(); track activity.id) {
     <ion-item>
-      <ion-label>Pokémon Yellow</ion-label>
+      <ion-label>{{activity.name}}</ion-label>
     </ion-item>
-    <ion-item>
-      <ion-label>Mega Man X</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>The Legend of Zelda</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Pac-Man</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Super Mario World</ion-label>
-    </ion-item>
+    }
   </ion-list>
+
+  <ion-toast
+    [isOpen]="createActivitySuccessToastOpen"
+    message="Activity created successfully"
+    [duration]="5000"
+    (didDismiss)="createActivityToastSetOpen()"
+  ></ion-toast>
 </ion-content>

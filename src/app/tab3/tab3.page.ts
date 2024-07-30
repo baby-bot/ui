@@ -20,6 +20,7 @@ import {
   IonCardTitle,
   IonCardContent,
   IonCardSubtitle,
+  IonToast,
 } from '@ionic/angular/standalone';
 import {
   Auth,
@@ -33,6 +34,7 @@ import {
 import * as firebase from 'firebase/compat/app';
 import { Subscription } from 'rxjs';
 import { NgIf } from '@angular/common';
+import { ToolbarComponent } from '../components/toolbar/toolbar.component';
 
 @Component({
   selector: 'app-tab3',
@@ -40,6 +42,7 @@ import { NgIf } from '@angular/common';
   styleUrls: ['tab3.page.scss'],
   standalone: true,
   imports: [
+    IonToast,
     IonCardSubtitle,
     IonButton,
     IonCard,
@@ -55,6 +58,7 @@ import { NgIf } from '@angular/common';
     IonContent,
     ReactiveFormsModule,
     NgIf,
+    ToolbarComponent,
   ],
 })
 export class Tab3Page implements OnInit, OnDestroy {
@@ -62,6 +66,8 @@ export class Tab3Page implements OnInit, OnDestroy {
   userProfileForm: FormGroup;
   originalDisplayName: string = '';
   private displayNameSubscription: Subscription;
+
+  updateNameToastOpen = false;
 
   phoneNumberForm: FormGroup;
   verificationForm: FormGroup;
@@ -126,6 +132,7 @@ export class Tab3Page implements OnInit, OnDestroy {
           .then(() => {
             this.originalDisplayName = displayName;
             // Handle successful update
+            this.updateNameToastOpen = true;
           })
           .catch((error) => {
             // Handle error
@@ -146,8 +153,8 @@ export class Tab3Page implements OnInit, OnDestroy {
     );
   }
 
-  logout() {
-    this.afAuth.signOut();
+  async logout() {
+    await this.afAuth.signOut();
   }
 
   async sendVerificationCode() {

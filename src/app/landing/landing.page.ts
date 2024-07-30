@@ -30,7 +30,7 @@ export class LandingPage implements OnInit {
     try {
       this.authenticationInProgress.next(true);
 
-      const result = await FirebaseAuthentication.signInWithGoogle();
+      const result = await FirebaseAuthentication.signInWithGoogle({});
       if (result.user === null) {
         // User cancelled sign-in flow.
         this.authenticationInProgress.next(false);

@@ -1,24 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
+import { Auth, User, user } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import {
-  setPersistence,
-  Persistence,
-  browserLocalPersistence,
-  browserSessionPersistence,
-} from 'firebase/auth';
-
-export interface User {
-  id: string;
-  email: string;
-  displayName: string;
-}
+import { browserLocalPersistence } from 'firebase/auth';
+import { BehaviorSubject, Observable, shareReplay } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private readonly auth: Auth, private readonly router: Router) {
-    auth.setPersistence(browserLocalPersistence).then(() => {});
-    auth.onAuthStateChanged((user) => {
+  user$ = user(this.afAuth);
+
+  constructor(private readonly afAuth: Auth, readonly router: Router) {
+    afAuth.setPersistence(browserLocalPersistence).then(() => {});
+    afAuth.onAuthStateChanged((user) => {
       if (user === null) {
         router.navigate(['/landing']);
       }

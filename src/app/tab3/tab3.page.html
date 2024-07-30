@@ -1,7 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title> Settings </ion-title>
-  </ion-toolbar>
+  <app-toolbar></app-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -63,8 +61,8 @@
     <ion-card-content>
       <form [formGroup]="phoneNumberForm" (ngSubmit)="sendVerificationCode()">
         <ion-item>
-          <ion-label position="stacked">Phone Number</ion-label>
           <ion-input
+            label="Phone Number"
             formControlName="phoneNumber"
             type="tel"
             required
@@ -87,8 +85,8 @@
     <ion-card-content>
       <form [formGroup]="verificationForm" (ngSubmit)="verifyCode()">
         <ion-item>
-          <ion-label position="stacked">Verification Code</ion-label>
           <ion-input
+            label="Verification Code"
             formControlName="verificationCode"
             type="text"
             required
@@ -106,4 +104,11 @@
   <div id="recaptcha-container"></div>
 
   <ion-button (click)="logout()">Logout</ion-button>
+
+  <ion-toast
+    [isOpen]="updateNameToastOpen"
+    message="User profile updated successfully"
+    [duration]="5000"
+    (didDismiss)="updateNameToastOpen = false"
+  ></ion-toast>
 </ion-content>
