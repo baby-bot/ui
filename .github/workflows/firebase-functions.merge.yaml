@@ -24,13 +24,32 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Authenticate with Firebase
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BABY_BOT_D8EF9 }}
-        run: firebase use baby-bot-d8ef9
-        # run: firebase functions:config:set stripe.secret="your-stripe-secret-key" twilio.account_sid="your-twilio-account-sid" twilio.auth_token="your-twilio-auth-token"
+      # - name: Authenticate with Firebase
+      #   env:
+      #     FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BABY_BOT_D8EF9 }}
+      #   run: firebase use baby-bot-d8ef9
+      #   # run: firebase functions:config:set stripe.secret="your-stripe-secret-key" twilio.account_sid="your-twilio-account-sid" twilio.auth_token="your-twilio-auth-token"
 
-      - name: Deploy to Firebase
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BABY_BOT_D8EF9 }}
-        run: firebase deploy --only functions --token $FIREBASE_TOKEN
+      # - name: Deploy to Firebase
+      #   env:
+      #     FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BABY_BOT_D8EF9 }}
+      #   run: firebase deploy --only functions --token $FIREBASE_TOKEN
+
+      - name: Prepare Google Application Credentials
+        shell: bash
+        run: |
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" | base64 --decode > "google-application-credentials.json"
+
+      - name: Use Firebase Dev
+        shell: bash
+        run: |
+          firebase use baby-bot-d8ef9 --debug
+
+      - name: Deploy Firebase functions
+        shell: bash
+        run: firebase deploy --only functions --non-interactive --debug
+
+      - name: Remove credentials file
+        if: success() || failure()
+        run: |
+          rm google-application-credentials.json
